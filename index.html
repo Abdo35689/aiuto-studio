@@ -63,6 +63,9 @@ details p{margin:8px 0;color:var(--muted)}
 </section>
 </main>
 <script>
+// INCOLLA QUI L'URL DEL TUO CLOUDFLARE WORKER:
+const WORKER_URL = 'https://INSERISCI-QUI-IL-TUO-URL.workers.dev';
+
 const $=id=>document.getElementById(id);
 let tasks=[],concepts=[],today;
 $('date').min=new Date(Date.now()+864e5).toISOString().slice(0,10);
@@ -145,18 +148,32 @@ function render(){
 $('f').addEventListener('submit',async e=>{
   e.preventDefault();
   const msg=$('msg');msg.className='msg';msg.textContent='';
-  const sample=await window.claude?.use('sample');
-  if(!sample){msg.className='msg err';msg.textContent='L’analisi con AI non è disponibile in questa visualizzazione. Apri la pagina da claude.ai.';return}
+  if(WORKER_URL.includes('INSERISCI-QUI')){
+    msg.className='msg err';
+    msg.textContent='Inserisci prima l’URL del tuo Cloudflare Worker nel codice (variabile WORKER_URL).';
+    return;
+  }
   today=new Date();today.setHours(0,0,0,0);
   const exam=new Date($('date').value+'T00:00:00');
   const days=Math.max(1,Math.ceil((exam-today)/864e5));
   const daily=Math.max(15,Number($('mins').value)||90);
-  $('go').disabled=true;msg.textContent='Sto analizzando il materiale…';
+  $('go').disabled=true;msg.textContent='Sto analizzando il materiale con Gemini…';
   try{
-    concepts=await sample.json(
+    const prompt=
       'Sei un tutor universitario. Dal materiale seguente estrai i concetti chiave in ordine didattico (massimo 20). '+
-      'Rispondi solo con un array JSON: [{"title":string,"summary":string (2 frasi),"difficulty":intero 1-5,"minutes":intero 10-45 (tempo di studio)}]. '+
-      'Usa solo ciò che c’è nel materiale e scrivi nella sua lingua.\n\nMATERIALE:\n'+$('text').value.slice(0,60000));
+      'Rispondi esclusivamente con un array JSON valido, senza testo aggiuntivo né markdown: '+
+      '[{"title":string,"summary":string (2 frasi),"difficulty":intero 1-5,"minutes":intero 10-45 (tempo di studio)}]. '+
+      'Usa solo ciò che c’è nel materiale e scrivi nella sua lingua.\n\nMATERIALE:\n'+$('text').value.slice(0,60000);
+    const res=await fetch(WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+    const data=await res.json();
+    if(!res.ok||data.error)throw new Error(data.error||'Errore di connessione al server.');
+    if(data.raw?.error)throw new Error(data.raw.error.message||'Errore API Gemini.');
+    const clean=(data.text||'').replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    concepts=JSON.parse(clean);
     if(!Array.isArray(concepts)||!concepts.length)throw new Error('Nessun concetto trovato: prova con più testo.');
     concepts=concepts.map(c=>({title:String(c.title),summary:String(c.summary||''),difficulty:Math.min(5,Math.max(1,+c.difficulty||3)),minutes:Math.min(45,Math.max(10,+c.minutes||25))}));
     tasks=buildPlan(concepts,days,daily);
@@ -167,7 +184,7 @@ $('f').addEventListener('submit',async e=>{
     $('out').scrollIntoView({behavior:'smooth'});
   }catch(err){
     msg.className='msg err';
-    msg.textContent=err.code==='not_granted'?'Per analizzare il materiale serve il tuo consenso: riprova e accetta.':err.code==='rate_limited'?'Troppe richieste: attendi un minuto e riprova.':(err.message||'Qualcosa è andato storto. Riprova.');
+    msg.textContent=err.message||'Qualcosa è andato storto durante l’analisi. Riprova.';
   }finally{$('go').disabled=false}
 });
 </script>
