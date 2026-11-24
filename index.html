@@ -10,6 +10,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
+<!-- Motore AI gratuito client-side (nessuna API key richiesta) -->
+<script src="https://js.puter.com/v2/"></script>
+
 <style>
 :root {
   --primary: #6658e8;
@@ -122,6 +125,16 @@ button {
   text-align: center;
 }
 
+.ai-badge-pill {
+  margin-left: auto;
+  background: linear-gradient(135deg, #7566ff, #16b8a6);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
 .sidebar-bottom {
   margin-top: auto;
   background: linear-gradient(135deg, #f2efff, #e9f8ff);
@@ -137,6 +150,7 @@ button {
   font-size: 12px;
   color: var(--muted);
   line-height: 1.5;
+  margin: 0;
 }
 
 /* MAIN */
@@ -148,7 +162,8 @@ button {
 
 .topbar {
   height: 82px;
-  background: rgba(255,255,255,.8);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -162,7 +177,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 13px;
   padding: 12px 16px;
-  width: min(430px, 60%);
+  width: min(430px, 55%);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -173,6 +188,38 @@ button {
   background: transparent;
   outline: none;
   width: 100%;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ai-status-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f2f0ff;
+  color: var(--primary);
+  border: 1px solid #dfd9ff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.ai-status-btn:hover {
+  background: #e6e2ff;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16b8a6;
+  box-shadow: 0 0 0 3px rgba(22, 184, 166, 0.2);
 }
 
 .profile {
@@ -234,9 +281,16 @@ button {
   transition: .2s;
 }
 
-.primary-btn:hover {
+.primary-btn:hover:not(:disabled) {
   background: var(--primary-dark);
   transform: translateY(-2px);
+}
+
+.primary-btn:disabled,
+.secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .secondary-btn {
@@ -248,7 +302,7 @@ button {
   transition: .2s;
 }
 
-.secondary-btn:hover {
+.secondary-btn:hover:not(:disabled) {
   background: #e4e1ff;
 }
 
@@ -672,7 +726,6 @@ button {
 
 .output {
   margin-top: 22px;
-  white-space: pre-wrap;
   line-height: 1.7;
   font-size: 14px;
 }
@@ -685,7 +738,238 @@ button {
   background: #fafaff;
   border: 1px solid #e7e4ff;
   border-radius: 14px;
+  padding: 22px;
+}
+
+.ai-formatted h4 {
+  color: var(--primary-dark);
+  margin: 16px 0 8px;
+  font-size: 16px;
+}
+
+.ai-formatted ul {
+  margin: 8px 0 14px;
+  padding-left: 20px;
+}
+
+.ai-formatted li {
+  margin-bottom: 6px;
+}
+
+.ai-formatted p {
+  margin: 8px 0;
+}
+
+.loading-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  background: #f5f3ff;
+  border: 1px solid #dfd9ff;
+  border-radius: 14px;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #d5ceff;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ASSISTENTE AI (CHAT) */
+
+.assistant-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  min-height: 600px;
+}
+
+.assistant-sidebar-panel {
+  background: #faf9ff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.assistant-sidebar-panel h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.quick-prompt-btn {
+  text-align: left;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 11px 12px;
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 600;
+  transition: .15s;
+}
+
+.quick-prompt-btn:hover {
+  border-color: var(--primary);
+  background: #f3f1ff;
+  color: var(--primary);
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 620px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fcfcff;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chat-msg {
+  max-width: 82%;
+  padding: 14px 17px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg.ai {
+  align-self: flex-start;
+  background: white;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 3px 12px rgba(32, 35, 58, .04);
+}
+
+.chat-msg-header {
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  opacity: 0.75;
+}
+
+.chat-input-bar {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  background: white;
+  border-top: 1px solid var(--border);
+}
+
+.chat-input-bar input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 15px;
+  outline: none;
+}
+
+.chat-input-bar input:focus {
+  border-color: var(--primary);
+}
+
+/* FLOATING AI BUTTON & DRAWER */
+
+.floating-ai-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background: linear-gradient(135deg, #6658e8, #8c7eff);
+  color: white;
+  border-radius: 999px;
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 10px 28px rgba(102, 88, 232, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  z-index: 90;
+  transition: .2s;
+}
+
+.floating-ai-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* MODAL IMPOSTAZIONI AI */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 26, 48, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 120;
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  padding: 26px;
+  box-shadow: 0 20px 50px rgba(20, 22, 45, 0.2);
+}
+
+.modal-card h3 {
+  margin: 0 0 8px;
+}
+
+.modal-field {
+  margin: 14px 0;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.modal-field select,
+.modal-field input {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  outline: none;
 }
 
 /* MAPPA */
@@ -709,20 +993,20 @@ button {
 .map-canvas {
   position: relative;
   width: 100%;
-  min-height: 500px;
+  min-height: 540px;
   background-color: #fbfbff;
   background-image: radial-gradient(#deddf0 1px, transparent 1px);
   background-size: 22px 22px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .map-node {
   position: absolute;
   min-width: 150px;
   max-width: 220px;
-  padding: 14px 17px;
+  padding: 13px 15px;
   border: 2px solid #c9c2ff;
   background: white;
   border-radius: 14px;
@@ -800,20 +1084,31 @@ button {
 /* FLASHCARD */
 
 .flashcard {
-  min-height: 220px;
+  min-height: 240px;
   display: grid;
   place-items: center;
   text-align: center;
   background: linear-gradient(135deg, #f5f2ff, #edfaff);
   border: 1px solid #e4e0ff;
   border-radius: 18px;
-  padding: 25px;
+  padding: 30px;
   cursor: pointer;
+  transition: .2s;
+}
+
+.flashcard:hover {
+  border-color: #b8afff;
+}
+
+.flashcard.answer-mode {
+  background: linear-gradient(135deg, #e7fbf5, #f2f9ff);
+  border-color: #a9e5d5;
 }
 
 .flashcard h2 {
-  font-size: 22px;
+  font-size: 21px;
   line-height: 1.5;
+  max-width: 700px;
 }
 
 .flashcard small {
@@ -835,13 +1130,23 @@ button {
 
 .quiz-question label {
   display: block;
-  padding: 9px;
+  padding: 9px 11px;
   border-radius: 9px;
   cursor: pointer;
+  margin-bottom: 4px;
 }
 
 .quiz-question label:hover {
   background: #f5f3ff;
+}
+
+.quiz-explanation {
+  margin-top: 10px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  background: #f4f3ff;
+  color: #3a3d5c;
 }
 
 .notice {
@@ -857,7 +1162,8 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .workspace-grid {
+  .workspace-grid,
+  .assistant-layout {
     grid-template-columns: 1fr;
   }
 }
@@ -874,6 +1180,7 @@ button {
 
   .logo span,
   .nav-item span:not(.nav-icon),
+  .ai-badge-pill,
   .sidebar-label,
   .sidebar-bottom {
     display: none;
@@ -933,6 +1240,10 @@ button {
       <span class="nav-icon">⌂</span><span>Dashboard</span>
     </button>
 
+    <button class="nav-item" data-page="assistant" onclick="showPage('assistant',this)">
+      <span class="nav-icon">🤖</span><span>Assistente AI</span><span class="ai-badge-pill">FREE</span>
+    </button>
+
     <button class="nav-item" data-page="documents" onclick="showPage('documents',this)">
       <span class="nav-icon">▤</span><span>Documenti</span>
     </button>
@@ -960,8 +1271,8 @@ button {
     </button>
 
     <div class="sidebar-bottom">
-      <h4>Il tuo studio, più semplice</h4>
-      <p>Organizza i documenti per materia e trasformali in strumenti per imparare.</p>
+      <h4>Tutor AI sempre attivo</h4>
+      <p>L'AI comprende i tuoi PDF, ragiona sui concetti e crea schemi, flashcard e quiz su misura.</p>
     </div>
   </aside>
 
@@ -974,11 +1285,19 @@ button {
         <input id="globalSearch" placeholder="Cerca nei tuoi documenti..." oninput="searchDocuments(this.value)">
       </div>
 
-      <div class="profile">
-        <div class="avatar">S</div>
-        <div>
-          <strong>Studente</strong><br>
-          <small style="color:var(--muted)">Il tuo spazio personale</small>
+      <div class="topbar-right">
+        <button class="ai-status-btn" onclick="openAISettings()" title="Configura il motore AI">
+          <span class="status-dot"></span>
+          <span id="aiEngineLabel">AI Gratuita Attiva</span>
+          <span>⚙️</span>
+        </button>
+
+        <div class="profile">
+          <div class="avatar">S</div>
+          <div>
+            <strong>Studente</strong><br>
+            <small style="color:var(--muted)">Il tuo spazio personale</small>
+          </div>
         </div>
       </div>
     </header>
@@ -991,11 +1310,14 @@ button {
         <div class="welcome">
           <div>
             <h1>Benvenuto nel tuo studio ✨</h1>
-            <p>Carica il materiale, dividilo per materie e impara con il tuo metodo.</p>
+            <p>Carica il materiale, dividilo per materie e lascia che l'AI ragioni con te.</p>
           </div>
-          <button class="primary-btn" onclick="document.getElementById('fileInput').click()">
-            + Carica materiale
-          </button>
+          <div class="header-actions">
+            <button class="secondary-btn" onclick="showPage('assistant')">🤖 Chiedi all'Assistente AI</button>
+            <button class="primary-btn" onclick="document.getElementById('fileInput').click()">
+              + Carica materiale
+            </button>
+          </div>
         </div>
 
         <div class="stats">
@@ -1052,32 +1374,32 @@ button {
 
           <div class="card">
             <div class="section-heading">
-              <h2>⚡ Strumenti rapidi</h2>
+              <h2>⚡ Strumenti AI ragionati</h2>
             </div>
 
             <div class="tools-grid">
               <button class="tool-card" onclick="generateSummary()">
                 <div class="tool-icon">📝</div>
-                <h4>Riassunto</h4>
-                <p>Riduci il testo ai concetti principali.</p>
+                <h4>Riassunto AI</h4>
+                <p>Sintesi logica, collegamenti e concetti chiave.</p>
               </button>
 
               <button class="tool-card" onclick="generateMindMap()">
                 <div class="tool-icon">🧩</div>
-                <h4>Schema</h4>
-                <p>Trasforma il testo in una mappa.</p>
+                <h4>Schema gerarchico</h4>
+                <p>L'AI organizza temi e sottoconcetti.</p>
               </button>
 
               <button class="tool-card" onclick="generateFlashcards()">
                 <div class="tool-icon">🃏</div>
-                <h4>Flashcard</h4>
-                <p>Ripassa con domanda e risposta.</p>
+                <h4>Flashcard AI</h4>
+                <p>Domande mirate e risposte chiare.</p>
               </button>
 
               <button class="tool-card" onclick="generateQuiz()">
                 <div class="tool-icon">🎯</div>
-                <h4>Quiz</h4>
-                <p>Verifica quanto hai imparato.</p>
+                <h4>Quiz ragionato</h4>
+                <p>Domande d'esame con spiegazione.</p>
               </button>
             </div>
           </div>
@@ -1092,21 +1414,71 @@ button {
 
           <p class="notice">
             Incolla qui il testo oppure carica un documento.
-            Il testo estratto sarà utilizzato dagli strumenti di studio.
+            L'intelligenza artificiale analizzerà e comprenderà questo testo per creare riassunti, mappe, flashcard e quiz.
           </p>
 
           <textarea id="studyText" placeholder="Incolla qui i tuoi appunti, una lezione o il testo del documento..."></textarea>
 
           <div class="action-row">
-            <button class="primary-btn" onclick="generateSummary()">Crea riassunto</button>
-            <button class="secondary-btn" onclick="generateMindMap()">Crea schema</button>
-            <button class="secondary-btn" onclick="generateFlashcards()">Crea flashcard</button>
-            <button class="secondary-btn" onclick="generateQuiz()">Crea quiz</button>
+            <button class="primary-btn" id="btnSummary" onclick="generateSummary()">🧠 Crea riassunto ragionato</button>
+            <button class="secondary-btn" id="btnMap" onclick="generateMindMap()">🧩 Crea schema AI</button>
+            <button class="secondary-btn" id="btnCards" onclick="generateFlashcards()">🃏 Crea flashcard AI</button>
+            <button class="secondary-btn" id="btnQuiz" onclick="generateQuiz()">🎯 Crea quiz AI</button>
           </div>
 
           <div class="output" id="output"></div>
         </div>
 
+      </section>
+
+      <!-- ASSISTENTE AI (TUTOR) -->
+      <section id="page-assistant" hidden>
+        <div class="welcome">
+          <div>
+            <h1>Assistente Tutor AI 🤖</h1>
+            <p>Fai domande, chiedi spiegazioni semplici, collegamenti logici o fatti interrogare sui tuoi documenti.</p>
+          </div>
+          <button class="secondary-btn" onclick="clearChat()">🗑️ Nuova conversazione</button>
+        </div>
+
+        <div class="card">
+          <div class="assistant-layout">
+            <div class="assistant-sidebar-panel">
+              <div>
+                <h4>📚 Contesto di studio</h4>
+                <p class="notice" style="margin:4px 0 8px">Scegli su quali documenti deve ragionare l'AI:</p>
+                <select id="assistantContextSelect" class="folder-select" style="width:100%;padding:10px"></select>
+              </div>
+
+              <div>
+                <h4>⚡ Azioni rapide</h4>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                  <button class="quick-prompt-btn" onclick="sendQuickPrompt('Spiegami i concetti principali di questo materiale in modo semplice e chiaro, come a un compagno di corso.')">
+                    💡 Spiegamelo in parole semplici
+                  </button>
+                  <button class="quick-prompt-btn" onclick="sendQuickPrompt('Analizza questo materiale e trova tutti i collegamenti logici, causa-effetto e analogie tra i vari argomenti.')">
+                    🧠 Fai collegamenti logici
+                  </button>
+                  <button class="quick-prompt-btn" onclick="sendQuickPrompt('Fammi 3 domande aperte tipo esame su questo materiale per mettermi alla prova. Aspetta le mie risposte prima di darmi la soluzione!')">
+                    🎓 Interrogami sull'argomento
+                  </button>
+                  <button class="quick-prompt-btn" onclick="sendQuickPrompt('Quali sono i 5 concetti più difficili o più probabili all\'esame in questo testo? Spiegali bene.')">
+                    🔍 Punti chiave per l'esame
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-box">
+              <div class="chat-messages" id="chatMessages"></div>
+              <div class="chat-input-bar">
+                <input id="chatInput" placeholder="Chiedi qualsiasi cosa al tuo Tutor AI (es. 'Non ho capito il passaggio su...')"
+                  onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button class="primary-btn" id="sendChatBtn" onclick="sendChatMessage()">Invia</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- DOCUMENTI -->
@@ -1157,8 +1529,9 @@ button {
         <div class="welcome">
           <div>
             <h1>Mappe concettuali 🧩</h1>
-            <p>Crea, modifica e organizza i tuoi schemi.</p>
+            <p>Crea, modifica e organizza i tuoi schemi gerarchici.</p>
           </div>
+          <button class="primary-btn" onclick="generateMindMap()">🧠 Rigenera con AI</button>
         </div>
 
         <div class="card">
@@ -1188,15 +1561,15 @@ button {
             <h1>Flashcard 🃏</h1>
             <p>Memorizza i concetti attraverso il ripasso attivo.</p>
           </div>
-          <button class="primary-btn" onclick="generateFlashcards()">Genera dal testo</button>
+          <button class="primary-btn" onclick="generateFlashcards()">🧠 Genera con AI</button>
         </div>
 
         <div class="card">
           <div class="flashcard" id="flashcard" onclick="flipCard()">
             <div>
               <small id="cardProgress">Nessuna flashcard</small>
-              <h2 id="cardText">Carica un documento o genera le flashcard.</h2>
-              <small>Clicca per girare la carta</small>
+              <h2 id="cardText">Carica un documento o genera le flashcard con l'AI.</h2>
+              <small id="cardHint">Clicca per girare la carta</small>
             </div>
           </div>
 
@@ -1212,9 +1585,9 @@ button {
         <div class="welcome">
           <div>
             <h1>Quiz e verifica 🎯</h1>
-            <p>Metti alla prova la tua preparazione.</p>
+            <p>Metti alla prova la tua preparazione con domande ragionate.</p>
           </div>
-          <button class="primary-btn" onclick="generateQuiz()">Genera quiz</button>
+          <button class="primary-btn" onclick="generateQuiz()">🧠 Genera quiz AI</button>
         </div>
 
         <div class="card">
@@ -1255,6 +1628,41 @@ button {
   </main>
 </div>
 
+<!-- PULSANTE RAPIDO FLOTTANTE TUTOR AI -->
+<button class="floating-ai-btn" onclick="showPage('assistant')" title="Apri l'Assistente AI gratuito">
+  🤖 Chiedi al Tutor AI
+</button>
+
+<!-- MODALE IMPOSTAZIONI MOTORE AI -->
+<div class="modal-backdrop" id="aiSettingsModal" hidden onclick="if(event.target===this) closeAISettings()">
+  <div class="modal-card">
+    <h3>⚙️ Motore AI di StudyFlow</h3>
+    <p class="notice">
+      Di default StudyFlow usa <strong>Puter.js (AI Gratuita Integrata)</strong> che funziona senza configurazione.
+      Se preferisci, puoi collegare una tua chiave API gratuita (es. Google AI Studio o Groq).
+    </p>
+
+    <div class="modal-field">
+      <label for="aiProviderSelect">Provider AI</label>
+      <select id="aiProviderSelect" onchange="toggleApiKeyField()">
+        <option value="puter">Puter.js (Gratuito integrato - Nessuna chiave richiesta)</option>
+        <option value="gemini">Google Gemini API (Chiave gratuita Google AI Studio)</option>
+        <option value="groq">Groq API (Chiave gratuita Llama 3.3 70B)</option>
+      </select>
+    </div>
+
+    <div class="modal-field" id="apiKeyFieldGroup" hidden>
+      <label for="aiCustomKey">Chiave API (salvata solo nel tuo browser)</label>
+      <input type="password" id="aiCustomKey" placeholder="Incolla qui la tua API key...">
+    </div>
+
+    <div class="action-row" style="justify-content:flex-end;margin-top:20px">
+      <button class="secondary-btn" onclick="closeAISettings()">Chiudi</button>
+      <button class="primary-btn" onclick="saveAISettings()">Salva impostazioni</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* CONFIGURAZIONE PDF.JS */
 if (window.pdfjsLib) {
@@ -1265,6 +1673,9 @@ if (window.pdfjsLib) {
 /* DATI (con persistenza in localStorage) */
 let folders = JSON.parse(localStorage.getItem("studyFolders") || "[]");
 let documents = JSON.parse(localStorage.getItem("studyDocuments") || "[]");
+let chatHistory = JSON.parse(localStorage.getItem("studyChatHistory") || "[]");
+let aiConfig = JSON.parse(localStorage.getItem("studyAIConfig") || '{"provider":"puter","apiKey":""}');
+
 let activeFolderId = "all";
 let selectedFolderColor = "#efedff";
 
@@ -1282,9 +1693,201 @@ function saveStorage() {
   try {
     localStorage.setItem("studyFolders", JSON.stringify(folders));
     localStorage.setItem("studyDocuments", JSON.stringify(documents));
+    localStorage.setItem("studyChatHistory", JSON.stringify(chatHistory.slice(-30)));
   } catch (err) {
-    console.warn("Spazio localStorage esaurito, alcuni file rimarranno solo in sessione:", err);
+    console.warn("Spazio localStorage esaurito:", err);
   }
+}
+
+/* =========================================================
+   MOTORE AI CON RAGIONAMENTO E COMPRENSIONE (GRATUITO)
+   ========================================================= */
+
+function openAISettings() {
+  document.getElementById("aiProviderSelect").value = aiConfig.provider || "puter";
+  document.getElementById("aiCustomKey").value = aiConfig.apiKey || "";
+  toggleApiKeyField();
+  document.getElementById("aiSettingsModal").hidden = false;
+}
+
+function closeAISettings() {
+  document.getElementById("aiSettingsModal").hidden = true;
+}
+
+function toggleApiKeyField() {
+  const provider = document.getElementById("aiProviderSelect").value;
+  document.getElementById("apiKeyFieldGroup").hidden = (provider === "puter");
+}
+
+function saveAISettings() {
+  const provider = document.getElementById("aiProviderSelect").value;
+  const apiKey = document.getElementById("aiCustomKey").value.trim();
+
+  if (provider !== "puter" && !apiKey) {
+    alert("Inserisci una chiave API valida oppure scegli Puter.js gratuito.");
+    return;
+  }
+
+  aiConfig = { provider, apiKey };
+  localStorage.setItem("studyAIConfig", JSON.stringify(aiConfig));
+  updateAILabel();
+  closeAISettings();
+}
+
+function updateAILabel() {
+  const label = document.getElementById("aiEngineLabel");
+  if (!label) return;
+  if (aiConfig.provider === "gemini") label.textContent = "Gemini AI Attivo";
+  else if (aiConfig.provider === "groq") label.textContent = "Groq Llama AI Attivo";
+  else label.textContent = "AI Gratuita Attiva";
+}
+
+async function callAI(messages) {
+  // 1. Google Gemini API (se l'utente ha inserito la sua chiave gratuita)
+  if (aiConfig.provider === "gemini" && aiConfig.apiKey) {
+    const sysMsg = messages.find(m => m.role === "system");
+    const contents = messages
+      .filter(m => m.role !== "system")
+      .map(m => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+      }));
+
+    const body = { contents };
+    if (sysMsg) {
+      body.systemInstruction = { parts: [{ text: sysMsg.content }] };
+    }
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(aiConfig.apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }
+    );
+
+    if (!res.ok) throw new Error("Errore chiave API Gemini (" + res.status + ")");
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  }
+
+  // 2. Groq API (se l'utente ha inserito la sua chiave gratuita)
+  if (aiConfig.provider === "groq" && aiConfig.apiKey) {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${aiConfig.apiKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages,
+        temperature: 0.4
+      })
+    });
+
+    if (!res.ok) throw new Error("Errore chiave API Groq (" + res.status + ")");
+    const data = await res.json();
+    return data?.choices?.[0]?.message?.content || "";
+  }
+
+  // 3. Default: Puter.js (Gratuito, zero API key, funziona direttamente nel browser)
+  if (!window.puter || !puter.ai) {
+    throw new Error("Servizio AI non raggiungibile. Verifica la connessione internet.");
+  }
+
+  const response = await puter.ai.chat(messages, { normalize: true });
+
+  if (typeof response === "string") return response;
+  if (response?.message?.content) {
+    if (typeof response.message.content === "string") return response.message.content;
+    if (Array.isArray(response.message.content)) {
+      return response.message.content.map(b => b.text || "").join("");
+    }
+  }
+  return String(response?.text || response || "");
+}
+
+function parseAIJson(rawText) {
+  const cleaned = rawText
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+  const firstBrace = cleaned.indexOf("{");
+  const firstBracket = cleaned.indexOf("[");
+  let start = -1;
+  let end = -1;
+
+  if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+    start = firstBracket;
+    end = cleaned.lastIndexOf("]");
+  } else if (firstBrace !== -1) {
+    start = firstBrace;
+    end = cleaned.lastIndexOf("}");
+  }
+
+  if (start === -1 || end === -1) {
+    throw new Error("Formato risposta AI non valido.");
+  }
+
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+function formatMarkdownSafe(rawText) {
+  const escaped = escapeHTML(rawText);
+  const lines = escaped.split(/\r?\n/);
+  let html = "";
+  let inList = false;
+
+  for (let line of lines) {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      if (inList) {
+        html += "</ul>";
+        inList = false;
+      }
+      continue;
+    }
+
+    // Titoli ### o ##
+    if (/^#{1,3}\s+/.test(trimmed)) {
+      if (inList) { html += "</ul>"; inList = false; }
+      const titleText = trimmed.replace(/^#{1,3}\s+/, "");
+      html += `<h4>${applyInlineFormatting(titleText)}</h4>`;
+      continue;
+    }
+
+    // Elenchi puntati (- , * , • )
+    if (/^[-*•]\s+/.test(trimmed)) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      const itemText = trimmed.replace(/^[-*•]\s+/, "");
+      html += `<li>${applyInlineFormatting(itemText)}</li>`;
+      continue;
+    }
+
+    if (inList) {
+      html += "</ul>";
+      inList = false;
+    }
+    html += `<p>${applyInlineFormatting(trimmed)}</p>`;
+  }
+
+  if (inList) html += "</ul>";
+  return html;
+}
+
+function applyInlineFormatting(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+}
+
+function trimContextText(text, maxChars = 22000) {
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars) + "\n\n[...testo troncato per lunghezza...]";
 }
 
 /* NAVIGAZIONE */
@@ -1295,6 +1898,11 @@ function showPage(page, button) {
   document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
   const targetBtn = button || document.querySelector(`.nav-item[data-page="${page}"]`);
   if (targetBtn) targetBtn.classList.add("active");
+
+  if (page === "assistant") {
+    updateFolderSelects();
+    renderChat();
+  }
 }
 
 /* GESTIONE CARTELLE MATERIE */
@@ -1386,16 +1994,32 @@ function deleteFolder(id, event) {
 
 function updateFolderSelects() {
   const homeSelect = document.getElementById("homeFolderSelect");
-  if (!homeSelect) return;
+  if (homeSelect) {
+    const currentVal = homeSelect.value;
+    homeSelect.innerHTML = `
+      <option value="">Nessuna cartella</option>
+      ${folders.map(f => `<option value="${f.id}">${escapeHTML(f.name)}</option>`).join("")}
+    `;
+    if (folders.some(f => f.id === currentVal)) {
+      homeSelect.value = currentVal;
+    }
+  }
 
-  const currentVal = homeSelect.value;
-  homeSelect.innerHTML = `
-    <option value="">Nessuna cartella</option>
-    ${folders.map(f => `<option value="${f.id}">${escapeHTML(f.name)}</option>`).join("")}
-  `;
-
-  if (folders.some(f => f.id === currentVal)) {
-    homeSelect.value = currentVal;
+  const assistantSelect = document.getElementById("assistantContextSelect");
+  if (assistantSelect) {
+    const prevVal = assistantSelect.value;
+    assistantSelect.innerHTML = `
+      <option value="studyText">📖 Testo attuale nell'area di studio</option>
+      <option value="allDocs">📚 Tutti i documenti caricati (${documents.length})</option>
+      ${folders.map(f => {
+        const count = documents.filter(d => d.folderId === f.id).length;
+        return `<option value="folder:${f.id}">📁 Materia: ${escapeHTML(f.name)} (${count})</option>`;
+      }).join("")}
+      <option value="none">🌐 Solo conoscenza generale (nessun file)</option>
+    `;
+    if ([...assistantSelect.options].some(o => o.value === prevVal)) {
+      assistantSelect.value = prevVal;
+    }
   }
 }
 
@@ -1412,7 +2036,7 @@ function renderFolders() {
       </div>
       <div>
         <h4>Tutti i documenti</h4>
-        <span>${documents.length} ${documents.length === 1 ? "file" : "file"}</span>
+        <span>${documents.length} file</span>
       </div>
     </div>
   `;
@@ -1444,7 +2068,7 @@ function renderFolders() {
         </div>
         <div>
           <h4>Senza cartella</h4>
-          <span>${uncategorizedCount} ${uncategorizedCount === 1 ? "file" : "file"}</span>
+          <span>${uncategorizedCount} file</span>
         </div>
       </div>
     `;
@@ -1459,6 +2083,7 @@ function moveDocumentToFolder(docId, folderId) {
 
   doc.folderId = folderId || null;
   saveStorage();
+  updateFolderSelects();
   renderFolders();
   renderFiles();
 }
@@ -1482,6 +2107,13 @@ function studyEntireFolder(folderId) {
 
   document.getElementById("studyText").value = combinedText;
   showPage("home");
+}
+
+function askAIAboutFolder(folderId) {
+  updateFolderSelects();
+  const select = document.getElementById("assistantContextSelect");
+  if (select) select.value = "folder:" + folderId;
+  showPage("assistant");
 }
 
 /* FILE UPLOAD */
@@ -1538,10 +2170,8 @@ async function handleFiles(files) {
 
     try {
       record.text = await extractText(file, ext);
-      record.status = record.text
-        ? "Testo estratto"
-        : "File caricato";
-      
+      record.status = record.text ? "Testo estratto" : "File caricato";
+
       if (record.text) {
         const oldText = document.getElementById("studyText").value;
         document.getElementById("studyText").value =
@@ -1553,6 +2183,7 @@ async function handleFiles(files) {
     }
 
     saveStorage();
+    updateFolderSelects();
     renderFolders();
     renderFiles();
   }
@@ -1669,10 +2300,8 @@ function renderFiles() {
   const all = document.getElementById("allDocuments");
   const activeBar = document.getElementById("activeFolderBar");
 
-  // Lista nella Dashboard (ultimi documenti)
   list.innerHTML = documents.map(buildFileRowHTML).join("");
 
-  // Filtro per la pagina Documenti
   let filteredDocs = documents;
   if (activeFolderId === "uncategorized") {
     filteredDocs = documents.filter(d => !d.folderId);
@@ -1692,6 +2321,9 @@ function renderFiles() {
           Materia: ${escapeHTML(currentFolder.name)} (${filteredDocs.length})
         </h3>
         <div class="header-actions">
+          <button class="secondary-btn" style="padding:9px 14px;font-size:13px" onclick="askAIAboutFolder('${currentFolder.id}')">
+            🤖 Chiedi all'AI su questa materia
+          </button>
           <button class="primary-btn" style="padding:9px 14px;font-size:13px" onclick="studyEntireFolder('${currentFolder.id}')">
             📖 Studia tutta la cartella
           </button>
@@ -1732,6 +2364,7 @@ function useDocument(id) {
 function removeDocument(id) {
   documents = documents.filter(d => String(d.id) !== String(id));
   saveStorage();
+  updateFolderSelects();
   renderFolders();
   renderFiles();
   updateStats();
@@ -1764,69 +2397,168 @@ function clearText() {
   document.getElementById("output").innerHTML = "";
 }
 
-/* RIASSUNTO */
-function generateSummary() {
+/* =========================================================
+   1. RIASSUNTO RAGIONATO CON AI
+   ========================================================= */
+async function generateSummary() {
   const text = getStudyText();
-
   if (!text) {
     alert("Inserisci o carica prima del testo da studiare.");
     return;
   }
 
-  const sentences = text
-    .replace(/\n+/g, " ")
-    .split(/(?<=[.!?])\s+/)
-    .filter(s => s.trim().length > 25);
-
-  const summary = sentences.slice(0, Math.max(3, Math.ceil(sentences.length * .3)));
-
-  document.getElementById("output").innerHTML = `
-    <div class="output-card">
-      <h3>📝 Riassunto del materiale</h3>
-      ${summary.map(s => `<p>${escapeHTML(s)}</p>`).join("")}
-      <p class="notice">
-        Riassunto automatico basato sulle prime frasi del testo.
-        Per un riassunto intelligente completo è possibile collegare un modello AI.
-      </p>
-      <button class="secondary-btn" onclick="downloadOutput()">Scarica riassunto</button>
+  const outputEl = document.getElementById("output");
+  outputEl.innerHTML = `
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <span>L'AI sta leggendo, comprendendo e strutturando i concetti chiave...</span>
     </div>
   `;
+
+  try {
+    const reply = await callAI([
+      {
+        role: "system",
+        content: `Sei un tutor universitario esperto di didattica e sintesi cognitiva. Analizza il materiale fornito, comprendine a fondo il significato e crea in italiano un riassunto chiaro, strutturato e ragionato.
+Usa questa struttura esatta con titoli ### e punti elenco -:
+### Idea Centrale
+(2-3 righe che spiegano il senso generale del testo)
+### Concetti Chiave e Definizioni
+- (i concetti fondamentali spiegati con chiarezza)
+### Collegamenti Logici e Ragionamento
+- (relazioni causa-effetto, confronti, perché un meccanismo funziona in un certo modo)
+### Punti Fondamentali da Ricordare
+- (ciò che non bisogna assolutamente dimenticare)`
+      },
+      {
+        role: "user",
+        content: "Analizza e riassumi ragionando questo testo di studio:\n\n" + trimContextText(text)
+      }
+    ]);
+
+    outputEl.innerHTML = `
+      <div class="output-card ai-formatted">
+        <h3>🧠 Riassunto Ragionato AI</h3>
+        ${formatMarkdownSafe(reply)}
+        <div class="action-row" style="margin-top:16px">
+          <button class="secondary-btn" onclick="downloadOutput()">Scarica riassunto</button>
+          <button class="secondary-btn" onclick="askFollowUpFromSummary()">🤖 Approfondisci con il Tutor AI</button>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    outputEl.innerHTML = `
+      <div class="output-card">
+        <p style="color:#d93848"><strong>Impossibile contattare l'AI:</strong> ${escapeHTML(err.message)}</p>
+        <p class="notice">Verifica di aver autorizzato il popup gratuito di Puter.js oppure imposta una chiave API gratuita cliccando su "⚙️" in alto a destra.</p>
+      </div>
+    `;
+  }
 }
 
-/* MAPPA CONCETTUALE */
-function generateMindMap() {
-  const text = getStudyText();
+function askFollowUpFromSummary() {
+  updateFolderSelects();
+  document.getElementById("assistantContextSelect").value = "studyText";
+  showPage("assistant");
+}
 
+/* =========================================================
+   2. MAPPA CONCETTUALE GERARCHICA CON AI
+   ========================================================= */
+async function generateMindMap() {
+  const text = getStudyText();
   if (!text) {
     alert("Inserisci prima un testo.");
     return;
   }
 
-  const sentences = text.split(/[.!?\n]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 15)
-    .slice(0, 8);
-
-  mapNodes = [];
-  mapConnections = [];
-  nodeCounter = 0;
-
-  const root = createNode("ARGOMENTO PRINCIPALE", 42, 190, "root");
-
-  sentences.forEach((sentence, index) => {
-    const node = createNode(
-      sentence.length > 70 ? sentence.slice(0, 67) + "..." : sentence,
-      340 + (index % 2) * 30,
-      35 + index * 55,
-      ["green-node", "orange-node", "pink-node"][index % 3]
-    );
-
-    mapConnections.push({from: root.id, to: node.id});
-  });
-
   showPage("maps");
-  renderMap();
-  updateStats();
+  const canvas = document.getElementById("mapCanvas");
+  canvas.querySelectorAll(".map-node").forEach(el => el.remove());
+  document.getElementById("mapLines").innerHTML = "";
+
+  const loader = document.createElement("div");
+  loader.className = "loading-box";
+  loader.style.margin = "20px";
+  loader.innerHTML = `<div class="spinner"></div><span>L'AI sta estraendo la gerarchia logica dei concetti...</span>`;
+  canvas.appendChild(loader);
+
+  try {
+    const reply = await callAI([
+      {
+        role: "system",
+        content: `Sei un esperto di mappe concettuali. Analizza il testo, comprendi la struttura gerarchica degli argomenti e rispondi ESCLUSIVAMENTE con un oggetto JSON valido (nessun testo prima o dopo) con questa struttura:
+{
+  "central": "Titolo breve Argomento Centrale",
+  "branches": [
+    {
+      "title": "Ramo Principale 1",
+      "children": ["Sottoconcetto 1A", "Sottoconcetto 1B"]
+    },
+    {
+      "title": "Ramo Principale 2",
+      "children": ["Sottoconcetto 2A", "Sottoconcetto 2B"]
+    }
+  ]
+}
+Usa etichette sintetiche e chiare (massimo 45 caratteri per nodo), 3-5 rami principali e 2-3 sottoconcetti per ramo.`
+      },
+      {
+        role: "user",
+        content: "Crea una mappa concettuale gerarchica per questo testo:\n\n" + trimContextText(text, 16000)
+      }
+    ]);
+
+    const data = parseAIJson(reply);
+    loader.remove();
+
+    mapNodes = [];
+    mapConnections = [];
+    nodeCounter = 0;
+
+    const branches = Array.isArray(data.branches) ? data.branches : [];
+    const branchStyles = ["green-node", "orange-node", "pink-node", ""];
+
+    // Calcolo altezza totale per distribuire bene i nodi
+    let totalLeaves = 0;
+    branches.forEach(b => {
+      totalLeaves += Math.max(1, (b.children || []).length);
+    });
+
+    const verticalSpacing = 74;
+    const totalHeight = Math.max(520, totalLeaves * verticalSpacing + 80);
+    canvas.style.minHeight = totalHeight + "px";
+
+    const root = createNode(data.central || "ARGOMENTO PRINCIPALE", 38, Math.round(totalHeight / 2 - 28), "root");
+
+    let currentY = 36;
+    branches.forEach((branch, bIdx) => {
+      const children = Array.isArray(branch.children) ? branch.children : [];
+      const blockCount = Math.max(1, children.length);
+      const blockHeight = blockCount * verticalSpacing;
+      const branchY = Math.round(currentY + blockHeight / 2 - 25);
+      const style = branchStyles[bIdx % branchStyles.length];
+
+      const branchNode = createNode(branch.title || ("Concetto " + (bIdx + 1)), 300, branchY, style);
+      mapConnections.push({ from: root.id, to: branchNode.id });
+
+      children.forEach((childText, cIdx) => {
+        const childY = currentY + cIdx * verticalSpacing;
+        const childNode = createNode(childText, 575, childY, style);
+        mapConnections.push({ from: branchNode.id, to: childNode.id });
+      });
+
+      currentY += blockHeight + 14;
+    });
+
+    renderMap();
+    updateStats();
+  } catch (err) {
+    loader.remove();
+    console.error(err);
+    alert("Errore nella generazione della mappa AI: " + err.message);
+  }
 }
 
 function createNode(text, x, y, style = "") {
@@ -1845,7 +2577,7 @@ function createNode(text, x, y, style = "") {
 function addNode() {
   const node = createNode(
     "Nuovo concetto",
-    150 + Math.random() * 300,
+    150 + Math.random() * 250,
     100 + Math.random() * 250,
     "green-node"
   );
@@ -1865,8 +2597,8 @@ function addChildNode() {
 
   const node = createNode(
     "Sottoconcetto",
-    parent.x + 220,
-    parent.y + 60,
+    parent.x + 230,
+    parent.y + 40,
     "orange-node"
   );
 
@@ -1891,7 +2623,6 @@ function changeNodeColor() {
 
 function renderMap() {
   const canvas = document.getElementById("mapCanvas");
-
   canvas.querySelectorAll(".map-node").forEach(el => el.remove());
 
   mapNodes.forEach(node => {
@@ -1923,8 +2654,8 @@ function renderMap() {
       const originalY = node.y;
 
       function move(ev) {
-        node.x = originalX + ev.clientX - startX;
-        node.y = originalY + ev.clientY - startY;
+        node.x = Math.max(0, originalX + ev.clientX - startX);
+        node.y = Math.max(0, originalY + ev.clientY - startY);
         div.style.left = node.x + "px";
         div.style.top = node.y + "px";
         renderLines();
@@ -1954,20 +2685,25 @@ function renderMap() {
 }
 
 function renderLines() {
+  const canvas = document.getElementById("mapCanvas");
   const svg = document.getElementById("mapLines");
   svg.innerHTML = "";
 
   mapConnections.forEach(connection => {
-    const a = mapNodes.find(n => n.id === connection.from);
-    const b = mapNodes.find(n => n.id === connection.to);
-    if (!a || !b) return;
+    const aEl = canvas.querySelector(`.map-node[data-id="${connection.from}"]`);
+    const bEl = canvas.querySelector(`.map-node[data-id="${connection.to}"]`);
+    if (!aEl || !bEl) return;
+
+    const x1 = aEl.offsetLeft + aEl.offsetWidth / 2;
+    const y1 = aEl.offsetTop + aEl.offsetHeight / 2;
+    const x2 = bEl.offsetLeft + bEl.offsetWidth / 2;
+    const y2 = bEl.offsetTop + bEl.offsetHeight / 2;
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-
-    line.setAttribute("x1", a.x + 80);
-    line.setAttribute("y1", a.y + 25);
-    line.setAttribute("x2", b.x + 80);
-    line.setAttribute("y2", b.y + 25);
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
     line.setAttribute("stroke", "#aaa4d8");
     line.setAttribute("stroke-width", "2");
 
@@ -1989,51 +2725,78 @@ function exportMap() {
   downloadFile("mappa-concettuale.txt", text);
 }
 
-/* FLASHCARD */
-function generateFlashcards() {
+/* =========================================================
+   3. FLASHCARD INTELLIGENTI CON AI
+   ========================================================= */
+async function generateFlashcards() {
   const text = getStudyText();
-
   if (!text) {
     alert("Inserisci prima il materiale.");
     return;
   }
 
-  const sentences = text.split(/[.!?\n]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 25)
-    .slice(0, 30);
-
-  flashcards = sentences.map((sentence, index) => ({
-    question: "Qual è il concetto da ricordare? (" + (index + 1) + ")",
-    answer: sentence
-  }));
-
-  currentCard = 0;
-  showingAnswer = false;
-
   showPage("flashcards");
-  renderFlashcard();
-  updateStats();
+  document.getElementById("cardProgress").textContent = "Generazione AI in corso...";
+  document.getElementById("cardText").textContent = "⏳ L'AI sta creando domande mirate e risposte sintetiche...";
+  document.getElementById("cardHint").textContent = "Attendi qualche secondo";
+
+  try {
+    const reply = await callAI([
+      {
+        role: "system",
+        content: `Sei un docente esperto di apprendimento attivo. Analizza il testo e genera da 8 a 12 flashcard efficaci in italiano per studiare e memorizzare i concetti chiave (definizioni, differenze, cause, meccanismi).
+Rispondi ESCLUSIVAMENTE con un array JSON valido di oggetti con chiavi "question" e "answer":
+[
+  {"question": "Domanda chiara e specifica?", "answer": "Risposta precisa e concisa."}
+]`
+      },
+      {
+        role: "user",
+        content: "Genera flashcard di studio ragionate da questo materiale:\n\n" + trimContextText(text, 18000)
+      }
+    ]);
+
+    const parsed = parseAIJson(reply);
+    if (!Array.isArray(parsed) || !parsed.length) {
+      throw new Error("Nessuna flashcard generata.");
+    }
+
+    flashcards = parsed;
+    currentCard = 0;
+    showingAnswer = false;
+    renderFlashcard();
+    updateStats();
+  } catch (err) {
+    console.error(err);
+    document.getElementById("cardProgress").textContent = "Errore";
+    document.getElementById("cardText").textContent = "Impossibile generare le flashcard: " + err.message;
+  }
 }
 
 function renderFlashcard() {
   const card = flashcards[currentCard];
+  const cardBox = document.getElementById("flashcard");
 
   if (!card) {
-    document.getElementById("cardText").textContent =
-      "Nessuna flashcard disponibile.";
+    cardBox.classList.remove("answer-mode");
+    document.getElementById("cardText").textContent = "Nessuna flashcard disponibile.";
     document.getElementById("cardProgress").textContent = "0 / 0";
     return;
   }
 
+  cardBox.classList.toggle("answer-mode", showingAnswer);
   document.getElementById("cardProgress").textContent =
-    (currentCard + 1) + " / " + flashcards.length;
+    `Carta ${currentCard + 1} di ${flashcards.length} · ${showingAnswer ? "RISPOSTA" : "DOMANDA"}`;
 
   document.getElementById("cardText").textContent =
     showingAnswer ? card.answer : card.question;
+
+  document.getElementById("cardHint").textContent =
+    showingAnswer ? "Clicca per tornare alla domanda" : "Clicca per scoprire la risposta";
 }
 
 function flipCard() {
+  if (!flashcards.length) return;
   showingAnswer = !showingAnswer;
   renderFlashcard();
 }
@@ -2052,48 +2815,76 @@ function previousCard() {
   renderFlashcard();
 }
 
-/* QUIZ */
-function generateQuiz() {
+/* =========================================================
+   4. QUIZ RAGIONATO CON SPIEGAZIONE AI
+   ========================================================= */
+async function generateQuiz() {
   const text = getStudyText();
-
   if (!text) {
     alert("Inserisci prima un testo.");
     return;
   }
 
-  const sentences = text.split(/[.!?\n]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 35)
-    .slice(0, 10);
+  showPage("quiz");
+  const container = document.getElementById("quizContainer");
+  document.getElementById("checkQuizBtn").hidden = true;
+  document.getElementById("quizResult").innerHTML = "";
 
-  quizQuestions = sentences.map((sentence, index) => ({
-    question: "Quale affermazione è presente nel materiale? (" + (index + 1) + ")",
-    options: [
-      sentence,
-      "Nessuna delle informazioni del testo è corretta.",
-      "Il concetto è completamente opposto.",
-      "L'argomento non viene trattato."
-    ],
-    answer: 0
-  }));
+  container.innerHTML = `
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <span>L'AI sta formulando domande di comprensione e ragionamento...</span>
+    </div>
+  `;
 
-  document.getElementById("quizContainer").innerHTML =
-    quizQuestions.map((q, i) => `
-      <div class="quiz-question">
+  try {
+    const reply = await callAI([
+      {
+        role: "system",
+        content: `Sei un professore universitario che prepara un test di verifica sulla reale comprensione del testo (non semplice memoria meccanica).
+Crea 6 domande a scelta multipla in italiano con 4 opzioni ciascuna (1 corretta e 3 distrattori plausibili).
+Rispondi ESCLUSIVAMENTE con un array JSON valido di oggetti così strutturati:
+[
+  {
+    "question": "Testo della domanda?",
+    "options": ["Opzione A", "Opzione B", "Opzione C", "Opzione D"],
+    "answer": 0,
+    "explanation": "Breve spiegazione del perché la risposta corretta è giusta."
+  }
+]
+Dove "answer" è l'indice numerico (0, 1, 2 o 3) dell'opzione corretta.`
+      },
+      {
+        role: "user",
+        content: "Crea un quiz di ragionamento basato su questo materiale:\n\n" + trimContextText(text, 18000)
+      }
+    ]);
+
+    const parsed = parseAIJson(reply);
+    if (!Array.isArray(parsed) || !parsed.length) {
+      throw new Error("Formato quiz non valido.");
+    }
+
+    quizQuestions = parsed;
+
+    container.innerHTML = quizQuestions.map((q, i) => `
+      <div class="quiz-question" id="quiz-q-${i}">
         <h4>${i + 1}. ${escapeHTML(q.question)}</h4>
         ${q.options.map((option, j) => `
-          <label>
+          <label id="quiz-opt-${i}-${j}">
             <input type="radio" name="q${i}" value="${j}">
             ${escapeHTML(option)}
           </label>
         `).join("")}
+        <div class="quiz-explanation" id="quiz-exp-${i}" hidden></div>
       </div>
     `).join("");
 
-  document.getElementById("checkQuizBtn").hidden = false;
-  document.getElementById("quizResult").innerHTML = "";
-
-  showPage("quiz");
+    document.getElementById("checkQuizBtn").hidden = false;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<p style="color:#d93848">Errore nella generazione del quiz: ${escapeHTML(err.message)}</p>`;
+  }
 }
 
 function checkQuiz() {
@@ -2101,19 +2892,160 @@ function checkQuiz() {
 
   quizQuestions.forEach((q, i) => {
     const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (selected && Number(selected.value) === q.answer) score++;
+    const chosen = selected ? Number(selected.value) : -1;
+    const isCorrect = chosen === Number(q.answer);
+    if (isCorrect) score++;
+
+    // Evidenzia risposta corretta e eventuale errore
+    q.options.forEach((_, j) => {
+      const lbl = document.getElementById(`quiz-opt-${i}-${j}`);
+      if (!lbl) return;
+      lbl.style.background = "";
+      lbl.style.fontWeight = "";
+      if (j === Number(q.answer)) {
+        lbl.style.background = "#e3faf4";
+        lbl.style.fontWeight = "700";
+      } else if (j === chosen && !isCorrect) {
+        lbl.style.background = "#ffe8ec";
+      }
+    });
+
+    const expEl = document.getElementById(`quiz-exp-${i}`);
+    if (expEl) {
+      expEl.hidden = false;
+      expEl.innerHTML = `<strong>${isCorrect ? "✅ Esatto!" : "❌ Da rivedere:"}</strong> ${escapeHTML(q.explanation || "")}`;
+    }
   });
 
   document.getElementById("quizResult").innerHTML = `
     <div class="output-card">
-      <h3>Risultato: ${score} / ${quizQuestions.length}</h3>
-      <p>Hai risposto correttamente a ${score} domande.</p>
-      <p class="notice">
-        Questo quiz utilizza una generazione semplificata.
-        Per domande realmente ragionate è necessario un modello AI.
-      </p>
+      <h3>🎯 Risultato: ${score} / ${quizQuestions.length}</h3>
+      <p>Hai risposto correttamente a <strong>${score}</strong> domande su <strong>${quizQuestions.length}</strong>. Controlla le spiegazioni sotto ogni domanda per consolidare il ragionamento.</p>
     </div>
   `;
+}
+
+/* =========================================================
+   5. ASSISTENTE TUTOR AI (CHAT CONTESTUALE)
+   ========================================================= */
+function getAssistantContextText() {
+  const mode = document.getElementById("assistantContextSelect")?.value || "studyText";
+
+  if (mode === "none") return "";
+
+  if (mode === "studyText") {
+    return getStudyText();
+  }
+
+  if (mode === "allDocs") {
+    return documents
+      .filter(d => d.text && d.text.trim())
+      .map(d => `[Documento: ${d.name}]\n${d.text.trim()}`)
+      .join("\n\n");
+  }
+
+  if (mode.startsWith("folder:")) {
+    const folderId = mode.replace("folder:", "");
+    const folder = folders.find(f => f.id === folderId);
+    const folderDocs = documents.filter(d => d.folderId === folderId && d.text && d.text.trim());
+    if (!folderDocs.length) return "";
+    return `MATERIA: ${folder ? folder.name : ""}\n\n` +
+      folderDocs.map(d => `[Documento: ${d.name}]\n${d.text.trim()}`).join("\n\n");
+  }
+
+  return "";
+}
+
+function renderChat() {
+  const container = document.getElementById("chatMessages");
+  if (!container) return;
+
+  if (!chatHistory.length) {
+    container.innerHTML = `
+      <div class="chat-msg ai">
+        <div class="chat-msg-header">🤖 Tutor AI</div>
+        Ciao! Sono il tuo assistente di studio gratuito. Posso leggere i documenti nelle tue cartelle, spiegarti concetti difficili, fare collegamenti logici o interrogarti per l'esame. Come posso aiutarti oggi?
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = chatHistory.map(msg => `
+    <div class="chat-msg ${msg.role === "user" ? "user" : "ai"}">
+      <div class="chat-msg-header">${msg.role === "user" ? "👤 Tu" : "🤖 Tutor AI"}</div>
+      <div class="ai-formatted">${msg.role === "user" ? escapeHTML(msg.content) : formatMarkdownSafe(msg.content)}</div>
+    </div>
+  `).join("");
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function sendQuickPrompt(promptText) {
+  const input = document.getElementById("chatInput");
+  input.value = promptText;
+  sendChatMessage();
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const sendBtn = document.getElementById("sendChatBtn");
+  const userText = input.value.trim();
+
+  if (!userText) return;
+
+  input.value = "";
+  input.disabled = true;
+  sendBtn.disabled = true;
+
+  chatHistory.push({ role: "user", content: userText });
+  renderChat();
+
+  const container = document.getElementById("chatMessages");
+  const typingEl = document.createElement("div");
+  typingEl.className = "chat-msg ai";
+  typingEl.innerHTML = `<div class="loading-box" style="padding:8px 12px;border:0;background:transparent"><div class="spinner"></div><span>Sto ragionando sulla risposta...</span></div>`;
+  container.appendChild(typingEl);
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const contextText = trimContextText(getAssistantContextText(), 20000);
+
+    const systemPrompt = contextText
+      ? `Sei un tutor universitario intelligente, empatico e chiaro. Rispondi in italiano. Ragiona passo dopo passo, fai esempi pratici e collegamenti logici basandoti principalmente sul materiale di studio dello studente riportato qui sotto (integrando con la tua conoscenza se utile per chiarire meglio i concetti):\n\n--- MATERIALE DI STUDIO ---\n${contextText}`
+      : `Sei un tutor universitario intelligente, empatico e chiaro. Rispondi in italiano, ragionando passo dopo passo e spiegando i concetti in modo semplice, strutturato e preciso.`;
+
+    const recentMessages = chatHistory.slice(-10).map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+
+    const reply = await callAI([
+      { role: "system", content: systemPrompt },
+      ...recentMessages
+    ]);
+
+    typingEl.remove();
+    chatHistory.push({ role: "assistant", content: reply });
+    saveStorage();
+    renderChat();
+  } catch (err) {
+    typingEl.remove();
+    chatHistory.push({
+      role: "assistant",
+      content: `⚠️ Errore di connessione con l'AI: ${err.message}. Riprova tra un attimo o controlla le impostazioni AI in alto.`
+    });
+    renderChat();
+  } finally {
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+function clearChat() {
+  chatHistory = [];
+  saveStorage();
+  renderChat();
 }
 
 /* APPUNTI */
@@ -2151,7 +3083,7 @@ function downloadNotes() {
 /* DOWNLOAD */
 function downloadOutput() {
   const text = document.getElementById("output").innerText;
-  downloadFile("riassunto.txt", text);
+  downloadFile("riassunto-ai.txt", text);
 }
 
 function downloadFile(filename, content) {
@@ -2177,14 +3109,16 @@ function escapeHTML(text) {
 }
 
 /* AVVIO */
+updateAILabel();
 updateFolderSelects();
 renderFolders();
 renderFiles();
+renderChat();
 updateStats();
 
-createNode("ARGOMENTO PRINCIPALE", 70, 190, "root");
-createNode("Concetto 1", 350, 100, "green-node");
-createNode("Concetto 2", 350, 260, "orange-node");
+createNode("ARGOMENTO PRINCIPALE", 60, 200, "root");
+createNode("Concetto 1", 330, 110, "green-node");
+createNode("Concetto 2", 330, 270, "orange-node");
 
 mapConnections.push({from: 1, to: 2}, {from: 1, to: 3});
 renderMap();
