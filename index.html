@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -205,6 +204,7 @@ button {
   align-items: center;
   gap: 20px;
   margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
 .welcome h1 {
@@ -216,6 +216,12 @@ button {
 .welcome p {
   color: var(--muted);
   margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .primary-btn {
@@ -239,6 +245,11 @@ button {
   border-radius: 11px;
   padding: 11px 15px;
   font-weight: 700;
+  transition: .2s;
+}
+
+.secondary-btn:hover {
+  background: #e4e1ff;
 }
 
 .card {
@@ -291,8 +302,9 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px 0 18px;
+  margin: 0 0 18px;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .section-heading h2 {
@@ -304,6 +316,36 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
   gap: 22px;
+}
+
+.upload-folder-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px auto 16px;
+  flex-wrap: wrap;
+}
+
+.upload-folder-bar label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.folder-select {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 11px;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.folder-select:focus {
+  border-color: var(--primary);
 }
 
 .upload-zone {
@@ -352,11 +394,12 @@ button {
   border-radius: 12px;
   margin-top: 10px;
   background: white;
+  flex-wrap: wrap;
 }
 
 .file-row .file-name {
   flex: 1;
-  min-width: 0;
+  min-width: 180px;
   font-size: 13px;
   overflow-wrap: anywhere;
 }
@@ -367,12 +410,200 @@ button {
   margin-top: 4px;
 }
 
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .file-row button {
   background: #f3f3fa;
   border-radius: 8px;
   padding: 7px 10px;
-  color: #777b91;
+  color: #555970;
+  font-size: 12px;
+  font-weight: 600;
+  transition: .15s;
 }
+
+.file-row button:hover {
+  background: #e7e5ff;
+  color: var(--primary);
+}
+
+.folder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* CARTELLE MATERIE */
+
+.new-folder-box {
+  background: #faf9ff;
+  border: 1px solid #dfd9ff;
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.new-folder-box[hidden] {
+  display: none;
+}
+
+.new-folder-box input {
+  flex: 1;
+  min-width: 220px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: white;
+  outline: none;
+}
+
+.new-folder-box input:focus {
+  border-color: var(--primary);
+}
+
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.color-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: .15s;
+}
+
+.color-dot.selected {
+  border-color: var(--text);
+  transform: scale(1.12);
+}
+
+.folders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.folder-card {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 15px;
+  padding: 16px;
+  cursor: pointer;
+  transition: .2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+}
+
+.folder-card:hover {
+  border-color: #c2baff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.folder-card.active {
+  border-color: var(--primary);
+  background: #f6f4ff;
+  box-shadow: 0 6px 20px rgba(102, 88, 232, .12);
+}
+
+.folder-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.folder-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.folder-card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0.7;
+}
+
+.folder-card:hover .folder-card-actions {
+  opacity: 1;
+}
+
+.folder-card-actions button {
+  background: #f3f3fa;
+  color: #666a82;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.folder-card-actions button:hover {
+  background: #e4e1ff;
+  color: var(--primary);
+}
+
+.folder-card h4 {
+  margin: 12px 0 4px;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.folder-card span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.active-folder-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #f7f6ff;
+  border: 1px solid #e3dfff;
+  border-radius: 13px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.active-folder-bar h3 {
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* STRUMENTI */
 
 .tools-grid {
   display: grid;
@@ -698,29 +929,29 @@ button {
 
     <div class="sidebar-label">Workspace</div>
 
-    <button class="nav-item active" onclick="showPage('home',this)">
+    <button class="nav-item active" data-page="home" onclick="showPage('home',this)">
       <span class="nav-icon">⌂</span><span>Dashboard</span>
     </button>
 
-    <button class="nav-item" onclick="showPage('documents',this)">
+    <button class="nav-item" data-page="documents" onclick="showPage('documents',this)">
       <span class="nav-icon">▤</span><span>Documenti</span>
     </button>
 
-    <button class="nav-item" onclick="showPage('maps',this)">
+    <button class="nav-item" data-page="maps" onclick="showPage('maps',this)">
       <span class="nav-icon">✧</span><span>Mappe concettuali</span>
     </button>
 
-    <button class="nav-item" onclick="showPage('flashcards',this)">
+    <button class="nav-item" data-page="flashcards" onclick="showPage('flashcards',this)">
       <span class="nav-icon">▣</span><span>Flashcard</span>
     </button>
 
-    <button class="nav-item" onclick="showPage('quiz',this)">
+    <button class="nav-item" data-page="quiz" onclick="showPage('quiz',this)">
       <span class="nav-icon">✓</span><span>Quiz</span>
     </button>
 
     <div class="sidebar-label">Personalizzazione</div>
 
-    <button class="nav-item" onclick="showPage('notes',this)">
+    <button class="nav-item" data-page="notes" onclick="showPage('notes',this)">
       <span class="nav-icon">✎</span><span>I miei appunti</span>
     </button>
 
@@ -730,7 +961,7 @@ button {
 
     <div class="sidebar-bottom">
       <h4>Il tuo studio, più semplice</h4>
-      <p>Organizza i documenti e trasformali in strumenti per imparare.</p>
+      <p>Organizza i documenti per materia e trasformali in strumenti per imparare.</p>
     </div>
   </aside>
 
@@ -760,7 +991,7 @@ button {
         <div class="welcome">
           <div>
             <h1>Benvenuto nel tuo studio ✨</h1>
-            <p>Carica il materiale, organizza le idee e impara con il tuo metodo.</p>
+            <p>Carica il materiale, dividilo per materie e impara con il tuo metodo.</p>
           </div>
           <button class="primary-btn" onclick="document.getElementById('fileInput').click()">
             + Carica materiale
@@ -803,6 +1034,12 @@ button {
                 PDF, PPT, PPTX, DOC, DOCX, TXT, immagini, CSV e altri formati.<br>
                 Puoi anche selezionare più documenti insieme.
               </p>
+
+              <div class="upload-folder-bar">
+                <label for="homeFolderSelect">Salva nella materia:</label>
+                <select id="homeFolderSelect" class="folder-select"></select>
+              </div>
+
               <button class="primary-btn" onclick="document.getElementById('fileInput').click()">
                 Seleziona file
               </button>
@@ -877,11 +1114,40 @@ button {
         <div class="welcome">
           <div>
             <h1>I tuoi documenti 📂</h1>
-            <p>Gestisci il materiale caricato.</p>
+            <p>Organizza PDF e appunti in cartelle divise per materia.</p>
           </div>
-          <button class="primary-btn" onclick="document.getElementById('fileInput').click()">+ Aggiungi</button>
+          <div class="header-actions">
+            <button class="secondary-btn" onclick="toggleNewFolderBox()">+ Nuova cartella</button>
+            <button class="primary-btn" onclick="document.getElementById('fileInput').click()">+ Aggiungi file</button>
+          </div>
         </div>
+
         <div class="card">
+          <!-- Modulo creazione nuova cartella -->
+          <div class="new-folder-box" id="newFolderBox" hidden>
+            <input type="text" id="newFolderName" placeholder="Nome materia (es. Anatomia, Chimica, Storia...)"
+              onkeydown="if(event.key==='Enter') createFolder()">
+            <div class="color-picker" id="colorPicker">
+              <button type="button" class="color-dot selected" data-color="#efedff" style="background:#7566ff" title="Viola"></button>
+              <button type="button" class="color-dot" data-color="#e3faf4" style="background:#16b8a6" title="Verde acqua"></button>
+              <button type="button" class="color-dot" data-color="#fff2df" style="background:#f59e0b" title="Arancione"></button>
+              <button type="button" class="color-dot" data-color="#e8f3ff" style="background:#3b82f6" title="Blu"></button>
+              <button type="button" class="color-dot" data-color="#fff0f6" style="background:#ec4899" title="Rosa"></button>
+            </div>
+            <button class="primary-btn" onclick="createFolder()">Crea cartella</button>
+            <button class="secondary-btn" onclick="toggleNewFolderBox(false)">Annulla</button>
+          </div>
+
+          <!-- Griglia cartelle materie -->
+          <div class="section-heading">
+            <h2>🗂️ Cartelle per materia</h2>
+          </div>
+          <div class="folders-grid" id="foldersGrid"></div>
+
+          <!-- Barra cartella attiva -->
+          <div id="activeFolderBar"></div>
+
+          <!-- Elenco documenti filtrati -->
           <div id="allDocuments"></div>
         </div>
       </section>
@@ -996,8 +1262,12 @@ if (window.pdfjsLib) {
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
 
-/* DATI */
-let documents = [];
+/* DATI (con persistenza in localStorage) */
+let folders = JSON.parse(localStorage.getItem("studyFolders") || "[]");
+let documents = JSON.parse(localStorage.getItem("studyDocuments") || "[]");
+let activeFolderId = "all";
+let selectedFolderColor = "#efedff";
+
 let flashcards = [];
 let currentCard = 0;
 let showingAnswer = false;
@@ -1008,20 +1278,220 @@ let mapConnections = [];
 let nodeCounter = 0;
 let currentColor = 0;
 
+function saveStorage() {
+  try {
+    localStorage.setItem("studyFolders", JSON.stringify(folders));
+    localStorage.setItem("studyDocuments", JSON.stringify(documents));
+  } catch (err) {
+    console.warn("Spazio localStorage esaurito, alcuni file rimarranno solo in sessione:", err);
+  }
+}
+
 /* NAVIGAZIONE */
 function showPage(page, button) {
   document.querySelectorAll('[id^="page-"]').forEach(el => el.hidden = true);
   document.getElementById("page-" + page).hidden = false;
 
   document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
-  if (button) button.classList.add("active");
+  const targetBtn = button || document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (targetBtn) targetBtn.classList.add("active");
+}
+
+/* GESTIONE CARTELLE MATERIE */
+document.querySelectorAll("#colorPicker .color-dot").forEach(dot => {
+  dot.addEventListener("click", () => {
+    document.querySelectorAll("#colorPicker .color-dot").forEach(d => d.classList.remove("selected"));
+    dot.classList.add("selected");
+    selectedFolderColor = dot.dataset.color;
+  });
+});
+
+function toggleNewFolderBox(forceState) {
+  const box = document.getElementById("newFolderBox");
+  const shouldShow = typeof forceState === "boolean" ? forceState : box.hidden;
+  box.hidden = !shouldShow;
+  if (shouldShow) {
+    document.getElementById("newFolderName").focus();
+  }
+}
+
+function createFolder() {
+  const input = document.getElementById("newFolderName");
+  const name = input.value.trim();
+
+  if (!name) {
+    alert("Inserisci il nome della materia per creare la cartella.");
+    return;
+  }
+
+  const newFolder = {
+    id: "fld_" + Date.now(),
+    name,
+    color: selectedFolderColor
+  };
+
+  folders.push(newFolder);
+  input.value = "";
+  toggleNewFolderBox(false);
+
+  activeFolderId = newFolder.id;
+  saveStorage();
+  updateFolderSelects();
+  renderFolders();
+  renderFiles();
+}
+
+function selectFolder(folderId) {
+  activeFolderId = folderId;
+  renderFolders();
+  renderFiles();
+}
+
+function renameFolder(id, event) {
+  event.stopPropagation();
+  const folder = folders.find(f => f.id === id);
+  if (!folder) return;
+
+  const newName = prompt("Rinomina materia:", folder.name);
+  if (newName && newName.trim()) {
+    folder.name = newName.trim();
+    saveStorage();
+    updateFolderSelects();
+    renderFolders();
+    renderFiles();
+  }
+}
+
+function deleteFolder(id, event) {
+  event.stopPropagation();
+  const folder = folders.find(f => f.id === id);
+  if (!folder) return;
+
+  if (!confirm(`Vuoi eliminare la cartella "${folder.name}"?\nI documenti al suo interno non verranno eliminati, ma spostati in "Senza cartella".`)) {
+    return;
+  }
+
+  folders = folders.filter(f => f.id !== id);
+  documents.forEach(doc => {
+    if (doc.folderId === id) doc.folderId = null;
+  });
+
+  if (activeFolderId === id) activeFolderId = "all";
+
+  saveStorage();
+  updateFolderSelects();
+  renderFolders();
+  renderFiles();
+}
+
+function updateFolderSelects() {
+  const homeSelect = document.getElementById("homeFolderSelect");
+  if (!homeSelect) return;
+
+  const currentVal = homeSelect.value;
+  homeSelect.innerHTML = `
+    <option value="">Nessuna cartella</option>
+    ${folders.map(f => `<option value="${f.id}">${escapeHTML(f.name)}</option>`).join("")}
+  `;
+
+  if (folders.some(f => f.id === currentVal)) {
+    homeSelect.value = currentVal;
+  }
+}
+
+function renderFolders() {
+  const grid = document.getElementById("foldersGrid");
+  if (!grid) return;
+
+  const uncategorizedCount = documents.filter(d => !d.folderId).length;
+
+  let html = `
+    <div class="folder-card ${activeFolderId === "all" ? "active" : ""}" onclick="selectFolder('all')">
+      <div class="folder-card-top">
+        <div class="folder-icon-box purple">📚</div>
+      </div>
+      <div>
+        <h4>Tutti i documenti</h4>
+        <span>${documents.length} ${documents.length === 1 ? "file" : "file"}</span>
+      </div>
+    </div>
+  `;
+
+  html += folders.map(folder => {
+    const count = documents.filter(d => d.folderId === folder.id).length;
+    return `
+      <div class="folder-card ${activeFolderId === folder.id ? "active" : ""}" onclick="selectFolder('${folder.id}')">
+        <div class="folder-card-top">
+          <div class="folder-icon-box" style="background:${folder.color}">📁</div>
+          <div class="folder-card-actions">
+            <button onclick="renameFolder('${folder.id}', event)" title="Rinomina">✎</button>
+            <button onclick="deleteFolder('${folder.id}', event)" title="Elimina cartella">✕</button>
+          </div>
+        </div>
+        <div>
+          <h4>${escapeHTML(folder.name)}</h4>
+          <span>${count} ${count === 1 ? "documento" : "documenti"}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  if (uncategorizedCount > 0 || folders.length > 0) {
+    html += `
+      <div class="folder-card ${activeFolderId === "uncategorized" ? "active" : ""}" onclick="selectFolder('uncategorized')">
+        <div class="folder-card-top">
+          <div class="folder-icon-box" style="background:#f1f2f7">📄</div>
+        </div>
+        <div>
+          <h4>Senza cartella</h4>
+          <span>${uncategorizedCount} ${uncategorizedCount === 1 ? "file" : "file"}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = html;
+}
+
+function moveDocumentToFolder(docId, folderId) {
+  const doc = documents.find(d => String(d.id) === String(docId));
+  if (!doc) return;
+
+  doc.folderId = folderId || null;
+  saveStorage();
+  renderFolders();
+  renderFiles();
+}
+
+function studyEntireFolder(folderId) {
+  const folderDocs = documents.filter(d => d.folderId === folderId);
+  if (!folderDocs.length) {
+    alert("Questa cartella è ancora vuota.");
+    return;
+  }
+
+  const combinedText = folderDocs
+    .filter(d => d.text && d.text.trim())
+    .map(d => `=== ${d.name.toUpperCase()} ===\n${d.text.trim()}`)
+    .join("\n\n");
+
+  if (!combinedText) {
+    alert("Nessun testo estraibile trovato nei file di questa cartella.");
+    return;
+  }
+
+  document.getElementById("studyText").value = combinedText;
+  showPage("home");
 }
 
 /* FILE UPLOAD */
 const fileInput = document.getElementById("fileInput");
 const dropZone = document.getElementById("dropZone");
 
-fileInput.addEventListener("change", e => handleFiles(e.target.files));
+fileInput.addEventListener("change", e => {
+  handleFiles(e.target.files);
+  fileInput.value = "";
+});
 
 dropZone.addEventListener("dragover", e => {
   e.preventDefault();
@@ -1039,6 +1509,16 @@ dropZone.addEventListener("drop", e => {
 });
 
 async function handleFiles(files) {
+  const isDocsPageOpen = !document.getElementById("page-documents").hidden;
+  let targetFolderId = null;
+
+  if (isDocsPageOpen && activeFolderId !== "all" && activeFolderId !== "uncategorized") {
+    targetFolderId = activeFolderId;
+  } else {
+    const homeSelect = document.getElementById("homeFolderSelect");
+    targetFolderId = homeSelect && homeSelect.value ? homeSelect.value : null;
+  }
+
   for (const file of files) {
     const ext = file.name.split(".").pop().toLowerCase();
 
@@ -1048,10 +1528,12 @@ async function handleFiles(files) {
       size: formatSize(file.size),
       type: ext,
       text: "",
+      folderId: targetFolderId,
       status: "In elaborazione..."
     };
 
     documents.push(record);
+    renderFolders();
     renderFiles();
 
     try {
@@ -1063,13 +1545,15 @@ async function handleFiles(files) {
       if (record.text) {
         const oldText = document.getElementById("studyText").value;
         document.getElementById("studyText").value =
-          oldText + "\n\n" + record.text;
+          (oldText ? oldText + "\n\n" : "") + record.text;
       }
     } catch (error) {
       console.error(error);
       record.status = "Caricato, estrazione non disponibile";
     }
 
+    saveStorage();
+    renderFolders();
     renderFiles();
   }
 
@@ -1147,24 +1631,83 @@ async function extractText(file, ext) {
 }
 
 /* LISTA FILE */
-function renderFiles() {
-  const list = document.getElementById("fileList");
-  const all = document.getElementById("allDocuments");
+function buildFileRowHTML(doc) {
+  const folder = folders.find(f => f.id === doc.folderId);
+  const badgeHTML = folder
+    ? `<span class="folder-badge" style="background:${folder.color};color:var(--text)">📁 ${escapeHTML(folder.name)}</span>`
+    : "";
 
-  const html = documents.map(doc => `
+  const folderOptions = `
+    <select class="folder-select" onchange="moveDocumentToFolder('${doc.id}', this.value)" title="Sposta in una materia">
+      <option value="">Senza cartella</option>
+      ${folders.map(f => `
+        <option value="${f.id}" ${doc.folderId === f.id ? "selected" : ""}>
+          📁 ${escapeHTML(f.name)}
+        </option>
+      `).join("")}
+    </select>
+  `;
+
+  return `
     <div class="file-row">
       <div style="font-size:24px">${getFileIcon(doc.type)}</div>
       <div class="file-name">
-        <strong>${escapeHTML(doc.name)}</strong>
+        <strong>${escapeHTML(doc.name)}</strong>${badgeHTML}
         <small>${doc.size} · ${escapeHTML(doc.status)}</small>
       </div>
-      <button onclick="useDocument('${doc.id}')">Apri</button>
-      <button onclick="removeDocument('${doc.id}')">✕</button>
+      <div class="file-actions">
+        ${folders.length ? folderOptions : ""}
+        <button onclick="useDocument('${doc.id}')">Apri</button>
+        <button onclick="removeDocument('${doc.id}')" title="Elimina">✕</button>
+      </div>
     </div>
-  `).join("");
+  `;
+}
 
-  list.innerHTML = html;
-  all.innerHTML = html || "<p class='notice'>Nessun documento caricato.</p>";
+function renderFiles() {
+  const list = document.getElementById("fileList");
+  const all = document.getElementById("allDocuments");
+  const activeBar = document.getElementById("activeFolderBar");
+
+  // Lista nella Dashboard (ultimi documenti)
+  list.innerHTML = documents.map(buildFileRowHTML).join("");
+
+  // Filtro per la pagina Documenti
+  let filteredDocs = documents;
+  if (activeFolderId === "uncategorized") {
+    filteredDocs = documents.filter(d => !d.folderId);
+    activeBar.innerHTML = `
+      <div class="active-folder-bar">
+        <h3>📄 Documenti senza cartella (${filteredDocs.length})</h3>
+        <button class="secondary-btn" onclick="selectFolder('all')">Mostra tutti</button>
+      </div>
+    `;
+  } else if (activeFolderId !== "all") {
+    const currentFolder = folders.find(f => f.id === activeFolderId);
+    filteredDocs = documents.filter(d => d.folderId === activeFolderId);
+    activeBar.innerHTML = currentFolder ? `
+      <div class="active-folder-bar">
+        <h3>
+          <span style="background:${currentFolder.color};padding:5px 9px;border-radius:9px">📁</span>
+          Materia: ${escapeHTML(currentFolder.name)} (${filteredDocs.length})
+        </h3>
+        <div class="header-actions">
+          <button class="primary-btn" style="padding:9px 14px;font-size:13px" onclick="studyEntireFolder('${currentFolder.id}')">
+            📖 Studia tutta la cartella
+          </button>
+          <button class="secondary-btn" style="padding:9px 14px;font-size:13px" onclick="selectFolder('all')">
+            ← Tutte le cartelle
+          </button>
+        </div>
+      </div>
+    ` : "";
+  } else {
+    activeBar.innerHTML = "";
+  }
+
+  all.innerHTML = filteredDocs.length
+    ? filteredDocs.map(buildFileRowHTML).join("")
+    : `<p class='notice'>Nessun documento in questa sezione. Trascina un file nella Dashboard o clicca su "+ Aggiungi file".</p>`;
 }
 
 function getFileIcon(ext) {
@@ -1188,6 +1731,8 @@ function useDocument(id) {
 
 function removeDocument(id) {
   documents = documents.filter(d => String(d.id) !== String(id));
+  saveStorage();
+  renderFolders();
   renderFiles();
   updateStats();
 }
@@ -1632,6 +2177,8 @@ function escapeHTML(text) {
 }
 
 /* AVVIO */
+updateFolderSelects();
+renderFolders();
 renderFiles();
 updateStats();
 
